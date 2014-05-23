@@ -3,6 +3,7 @@
 import sys
 from subprocess import call
 
+
 # Example cmds: build --app ride --store samsung --type release --plus
 # will run ./gradlew -a MapmyrideplusSamsungRelease
 
@@ -32,6 +33,7 @@ for i in range(1, len(sys.argv)):
         elif "plus" in val:
             isPlus = True
 
-cmd = "assembleMapmy" + name + ("Plus" if isPlus else "") + store + rType
+cmd = "installMapmy" + name + ("Plus" if isPlus else "") + store + rType
 call(["./gradlew", "-a", cmd])
+call(["adb", "shell", "am", "start", "-n", "com.mapmyhike.android2.debug/com.mapmyfitness.android.activity.Launcher"])
 
