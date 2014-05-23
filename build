@@ -10,30 +10,63 @@ from subprocess import call
 if len(sys.argv) <= 2:
     print "Flavor type not supplied. Defaulting to MapmyhikeGoogleDebug"
 
-name = "Hike"
+name = "hike"
 store = "Google"
 rType = "Debug"
 isPlus = False
+isDebug = True
 
 for i in range(1, len(sys.argv)):
     val = sys.argv[i]
-    if "--" in val:
-        if "app" in val:
-            i = i + 1
-            name = sys.argv[i]
-        
-        elif "store" in val:
-            i = i + 1
-            store = sys.argv[i].capitalize()
+    if "-fi" in val:
+        i = i + 1
+        name = "fitness"
+        continue
 
-        elif "type" in val:
-            i = i + 1
-            rType = sys.argv[i]
+    if "-hi" in val:
+        i = i + 1
+        name = "hike"
+        continue
 
-        elif "plus" in val:
-            isPlus = True
+    if "-ri" in val:
+        i = i + 1
+        name = "ride"
+        continue
+
+    if "-ru" in val:
+        i = i + 1
+        name = "run"
+        continue
+
+    if "-wa" in val:
+        i = i + 1
+        name = "walk"
+        continue
+
+    if "-p" in val:
+        isPlus = True
+        continue
+
+    if "--store" in val:
+        i = i + 1
+        store = sys.argv[i].capitalize()
+        continue
+
+    if "-d" in val:
+        rType = "Debug"
+        continue
+
+    if "-b" in val:
+        rType = "Beta"
+        isDebug = False
+        continue
+
+    if "-r" in val:
+        rType = "Release"
+        isDebug = False
+        continue
 
 cmd = "installMapmy" + name + ("Plus" if isPlus else "") + store + rType
 call(["./gradlew", "-a", cmd])
-call(["adb", "shell", "am", "start", "-n", "com.mapmyhike.android2.debug/com.mapmyfitness.android.activity.Launcher"])
+call(["adb", "shell", "am", "start", "-n", "com.mapmy" + name + ".android2" + (".debug" if isDebug else "") + "/com.mapmyfitness.android.activity.Launcher"])
 
