@@ -44,11 +44,10 @@ class DogWalkBuild(BuildData):
     
 def buildAndInstall(build, launch = True, runAsPlus = False):
     cmd = "installMapmy" + build.name + ("Plus" if runAsPlus else "") + _store + _buildType
-    print cmd
-    #call(["./gradlew", "-a", cmd])
+    call(["./gradlew", "-a", cmd])
 
-    #if launch:
-        #call(["adb", "shell", "am", "start", "-n", "com.mapmy" + build.name + ".android2" + (".debug" if _isDebug else "") + "/com.mapmyfitness.android.activity.Launcher"])
+    if launch:
+        call(["adb", "shell", "am", "start", "-n", "com.mapmy" + build.name + ".android2" + (".debug" if _isDebug else "") + "/com.mapmyfitness.android.activity.Launcher"])
     
 _types = [ FitnessBuild(), HikeBuild(), RideBuild(), RunBuild(), WalkBuild(), DogWalkBuild() ]
 _builds = []
