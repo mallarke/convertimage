@@ -7,66 +7,103 @@ from subprocess import call
 # Example cmds: build --app ride --store samsung --type release --plus
 # will run ./gradlew -a MapmyrideplusSamsungRelease
 
-if len(sys.argv) <= 2:
-    print "Flavor type not supplied. Defaulting to MapmyhikeGoogleDebug"
+class BuildData(object):
+    def __init__(self, name, shortName):
+        self.name = name
+        self.shortName = shortName
 
-name = "hike"
-store = "Google"
-rType = "Debug"
-isPlus = False
-isDebug = True
+    def isBuild(self, arg):
+        if arg == self.name or self.shortName in arg:
+            return self
+
+        return None
+
+class FitnessBuild(BuildData):
+    def __init__(self):
+        BuildData.__init__(self, "fitness", "fi")
+
+class HikeBuild(BuildData):
+    def __init__(self):
+        BuildData.__init__(self, "hike", "hi")
+
+class RideBuild(BuildData):
+    def __init__(self):
+        BuildData.__init__(self, "ride", "ri")
+
+class RunBuild(BuildData):
+    def __init__(self):
+        BuildData.__init__(self, "run", "ru")
+
+class WalkBuild(BuildData):
+    def __init__(self):
+        BuildData.__init__(self, "walk", "wa")
+
+class DogWalkBuild(BuildData):
+    def __init__(self):
+        BuildData.__init__(self, "dogwalk", "dw")
+    
+def buildAndInstall(build, launch):
+    cmd = "installMapmy" + build.name + ("Plus" if _isPlus else "") + _store + _buildType
+    call(["./gradlew", "-a", cmd])
+
+    if launch:
+        call(["adb", "shell", "am", "start", "-n", "com.mapmy" + build.name + ".android2" + (".debug" if _isDebug else "") + "/com.mapmyfitness.android.activity.Launcher"])
+    
+_types = [ FitnessBuild(), HikeBuild(), RideBuild(), RunBuild(), WalkBuild(), DogWalkBuild() ]
+_builds = []
+
+_isPlus = False
+_store = "Google"
+_buildType = "Debug"
+_isDebug = True
+
+_buildAll = False
 
 for i in range(1, len(sys.argv)):
     val = sys.argv[i]
-    if "-fi" in val:
-        i = i + 1
-        name = "fitness"
-        continue
 
-    if "-hi" in val:
-        i = i + 1
-        name = "hike"
-        continue
+    for t in _types:
+        buildType = t.isBuild(val)
+        if buildType is not None:
+            _builds.append(buildType)
+            continue
 
-    if "-ri" in val:
-        i = i + 1
-        name = "ride"
-        continue
-
-    if "-ru" in val:
-        i = i + 1
-        name = "run"
-        continue
-
-    if "-wa" in val:
-        i = i + 1
-        name = "walk"
+    if val == "all":
+        _buildAll = True
         continue
 
     if "-p" in val:
-        isPlus = True
+        _isPlus = True
         continue
 
     if "--store" in val:
         i = i + 1
-        store = sys.argv[i].capitalize()
+        _store = sys.argv[i].capitalize()
         continue
 
     if "-d" in val:
-        rType = "Debug"
+        _buildType = "Debug"
         continue
 
     if "-b" in val:
-        rType = "Beta"
-        isDebug = False
+        _buildType = "Beta"
+        _isDebug = False
         continue
 
     if "-r" in val:
-        rType = "Release"
-        isDebug = False
+        _buildType = "Release"
+        _isDebug = False
         continue
 
-cmd = "installMapmy" + name + ("Plus" if isPlus else "") + store + rType
-call(["./gradlew", "-a", cmd])
-call(["adb", "shell", "am", "start", "-n", "com.mapmy" + name + ".android2" + (".debug" if isDebug else "") + "/com.mapmyfitness.android.activity.Launcher"])
+if _buildAll:
+    for i, build in enumerate(_types):
+        buildAndInstall(build, (i == 0))
+else :
+    if len(_builds) == 0:
+        build = HikeBuild()
+        print "Flavor type not supplied. Defaulting to Mapmy" + build.name + _store + _buildType
+        buildAndInstall(build, True)
+    else:
+        for i, build in enumerate(_builds):
+            buildAndInstall(build, (i == 0))
 
