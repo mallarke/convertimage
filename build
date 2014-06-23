@@ -42,12 +42,13 @@ class DogWalkBuild(BuildData):
     def __init__(self):
         BuildData.__init__(self, "dogwalk", "dw")
     
-def buildAndInstall(build, launch):
-    cmd = "installMapmy" + build.name + ("Plus" if _isPlus else "") + _store + _buildType
-    call(["./gradlew", "-a", cmd])
+def buildAndInstall(build, launch = True, runAsPlus = False):
+    cmd = "installMapmy" + build.name + ("Plus" if runAsPlus else "") + _store + _buildType
+    print cmd
+    #call(["./gradlew", "-a", cmd])
 
-    if launch:
-        call(["adb", "shell", "am", "start", "-n", "com.mapmy" + build.name + ".android2" + (".debug" if _isDebug else "") + "/com.mapmyfitness.android.activity.Launcher"])
+    #if launch:
+        #call(["adb", "shell", "am", "start", "-n", "com.mapmy" + build.name + ".android2" + (".debug" if _isDebug else "") + "/com.mapmyfitness.android.activity.Launcher"])
     
 _types = [ FitnessBuild(), HikeBuild(), RideBuild(), RunBuild(), WalkBuild(), DogWalkBuild() ]
 _builds = []
@@ -97,7 +98,9 @@ for i in range(1, len(sys.argv)):
 
 if _buildAll:
     for i, build in enumerate(_types):
-        buildAndInstall(build, (i == 0))
+        buildAndInstall(build, launch = (i == 0))
+        buildAndInstall(build, runAsPlus = True)
+        
 else :
     if len(_builds) == 0:
         build = HikeBuild()
@@ -105,5 +108,5 @@ else :
         buildAndInstall(build, True)
     else:
         for i, build in enumerate(_builds):
-            buildAndInstall(build, (i == 0))
+            buildAndInstall(build, launch = (i == 0), runAsPlus = _isPlus)
 
