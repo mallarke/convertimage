@@ -55,7 +55,7 @@ _builds = []
 _isPlus = False
 _store = "Google"
 _buildType = "Debug"
-_isDebug = True
+_isDebug = (_buildType == "Debug")
 
 _buildAll = False
 
@@ -104,7 +104,7 @@ if _buildAll:
         
 else :
     if len(_builds) == 0:
-        build = HikeBuild()
+        build = WalkBuild()
         print "Flavor type not supplied. Defaulting to Mapmy" + build.name + _store + _buildType
         buildAndInstall(build, True)
     else:

@@ -36,13 +36,13 @@ for root, dirs, files in os.walk(os.getcwd()):
 		if "@3x" in f:
 			cache[path] = os.path.join(PATH, "drawable-xxhdpi", f.replace("@3x", ""))
 
-		if "@2x" in f:
+		elif "@2x" in f:
 			cache[path] = os.path.join(PATH, "drawable-xhdpi", f.replace("@2x", ""))
 			
-		if "@1.5x" in f:
+		elif "@1.5x" in f:
 			cache[path] = os.path.join(PATH, "drawable-hdpi", f.replace("@1.5x", ""))
 
-		if "@1x" in f:
+		else:
 			cache[path] = os.path.join(PATH, "drawable-mdpi", f.replace("@1x", ""))
 
 
